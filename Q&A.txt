@@ -1,0 +1,28 @@
+cc.systemEvent.on('key', func.bin(this, para), this);
+cc.systemEvent.off('key', func, this);
+如果这么做 cc.systemEvent.off  无法移除callback 
+原因：
+CallbacksInvoker 
+proto.remove = function (key, callback, target) {
+    var list = this._callbackTable[key];
+    if (list) {
+        target = target || null;
+        var callbacks = list.callbacks;
+        var targets = list.targets;
+        for (var i = 0; i < callbacks.length; ++i) {
+            if (callbacks[i] === callback && targets[i] === target) {
+                if (list.isInvoking) {
+                    list.cancel(i);
+                }
+                else {
+                    fastRemoveAt(callbacks, i);
+                    fastRemoveAt(targets, i);
+                }
+                break;
+            }
+        }
+    }
+};
+
+if (callbacks[i] === callback && targets[i] === target)
+callbacks[i] === callback 返回false
